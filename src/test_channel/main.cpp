@@ -45,12 +45,14 @@ TEST_CASE("Tests channel", "[channel]") {
 
 
         // spawn 8 threads
-        auto threads = std::vector<std::jthread>{};
+        auto threads = std::vector<std::thread>{};
         for (size_t i{0}; i < 8; ++i) {
             threads.emplace_back(threadFunc);
         }
 
-        // implicit waiting till all jobs are done
+        // join all threads
+        for (auto& t : threads) t.join();
+
     }
 
     CHECK(results->size() == 1710);

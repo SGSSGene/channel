@@ -15,3 +15,4 @@ target_link_libraries(${PROJECT_NAME}
     channel::channel
     Catch2::Catch2WithMain
 )
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
