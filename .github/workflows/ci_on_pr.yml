@@ -48,6 +48,7 @@ jobs:
           cmake_flags: ${{ matrix.cmake_flags }}
           cmake_c_flags: ${{ matrix.cmake_c_flags }}
           cmake_cxx_flags: ${{ matrix.cmake_cxx_flags }}
+          codecov_token: ${{ secrets.CODECOV_TOKEN }}
   final:
     runs-on: ubuntu-22.04
     name: final-pass
