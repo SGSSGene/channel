@@ -23,6 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - {os: ubuntu-22.04, compiler: cpm_update_version}
           - {os: ubuntu-22.04, compiler: check_tag-open_issue}
     steps:
       - name: Standard IV-project testing
@@ -31,4 +32,4 @@ jobs:
           compiler: ${{ matrix.compiler }}
           threads: 2
           cmake_flags: ${{ matrix.cmake_flags }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
