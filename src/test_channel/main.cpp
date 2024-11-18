@@ -112,9 +112,13 @@ TEST_CASE("Tests value_mutex", "[value_mutex]") {
     SECTION("simple int") {
         auto myint = channel::value_mutex<int>{};
 
-        SECTION("test lock") {
+        SECTION("test lock - 1") {
             auto l = *myint;
             *l = 0;
+        }
+        SECTION("test lock - 2") {
+            auto [g, v] = *myint;
+            v = 0;
         }
         SECTION("test const lock") {
             auto l = *std::as_const(myint);
