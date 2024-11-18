@@ -10,7 +10,9 @@ Provides utility functions for threaded work loads.
 
 ## API
 - `channel::value_mutex<T>` value with mutex
+
     Helps locking a mutex before accessing the value.
+
     Example 1:
     ```
     auto id = channel::value_mutex<int>{0};
@@ -33,6 +35,7 @@ Provides utility functions for threaded work loads.
     }
     ```
 - `channel::channel`/`channel::sender_receiver` a channel for processing messages
+
     Example 1
     ```
     // creates a channel FILA (First in Last out)(stack)
