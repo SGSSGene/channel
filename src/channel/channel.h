@@ -4,8 +4,10 @@
 
 #include <cassert>
 #include <condition_variable>
+#include <stdexcept>
 #include <mutex>
 #include <optional>
+#include <deque>
 #include <vector>
 
 
@@ -26,19 +28,23 @@ public:
     sender_receiver(sender_receiver const&) = delete;
     sender_receiver(sender_receiver&&) = delete;
     ~sender_receiver() {
-        if (channel) {
-            auto _ = std::lock_guard{channel->mutex};
-            channel->number_of_sender_receiver -= 1;
-            if (channel->number_of_sender_receiver > 0) {
-                channel->cv_on_msg.notify_one();
-            } else {
-                channel->cv_on_dtor.notify_one();
-            }
-        }
+        close();
     }
 
     auto operator=(sender_receiver const&) = delete;
     auto operator=(sender_receiver&&) = delete;
+
+    void close() {
+        if (channel) {
+            auto _ = std::lock_guard{channel->mutex};
+            channel->number_of_sender_receiver -= 1;
+            channel->number_of_sender_receiver.notify_all();
+            if (channel->number_of_sender_receiver > 0) {
+                channel->cv_on_msg.notify_one();
+            }
+            channel = nullptr;
+        }
+    }
 
     // send value to channel
     void send(value_t value) {
@@ -52,6 +58,7 @@ public:
     // if all sender_receiver are blocking, than one sender_receiver will return from `recv()`
     // returns a value if available, otherwise blocks, returns immediately if all
     //   sender_receiver are in a blocking call.
+    [[nodiscard]]
     auto recv() -> std::optional<value_t> {
         assert(channel);
         auto g = std::unique_lock{channel->mutex};
@@ -70,6 +77,7 @@ public:
 
     // peeks for new message
     // returns a value if available, otherwise std::nullopt
+    [[nodiscard]]
     auto try_recv() -> std::optional<value_t> {
         assert(channel);
         auto g = std::unique_lock{channel->mutex};
@@ -78,10 +86,11 @@ public:
     }
 
     // waits blocking for a new message
-    // if all sender_receiver ar blocking, execute idle function, until idle function returns false
+    // if all sender_receiver are blocking, execute idle function, until idle function returns false
     // returns a value if available, otherwise blocks, returns immediately if all
-    //  sener_receiver are in blocking call and no idle work left
+    //  sender_receiver are in blocking call and no idle work left
     template <typename CB>
+    [[nodiscard]]
     auto recv_or_idle(CB idle) {
         do {
             if (auto value = try_recv()) {
@@ -91,6 +100,9 @@ public:
         return recv();
     }
 
+    // loops over the work,
+    // if no work is available it will loop over idle_cb.
+    // if idle_cb returns false, the loop will abort if also no work is available
     template <typename work_cb, typename idle_cb>
     void loop_or_idle(work_cb&& _work_cb, idle_cb&& _idle_cb) {
         while (true) {
@@ -108,18 +120,19 @@ public:
 
 template <typename _value_t, template <class, class...> typename type = std::vector>
 class channel {
+    static_assert(std::same_as<type<_value_t>, std::vector<_value_t>>
+        || std::same_as<type<_value_t>, std::deque<_value_t>>);
+
     friend class sender_receiver<channel>;
 
     using value_t = _value_t;
-    std::vector<value_t> stack;
+    type<value_t> stack;
 
-    size_t number_of_sender_receiver;
+    std::atomic_size_t number_of_sender_receiver;
     size_t number_of_blocking_recv;
 
     std::mutex mutex;
     std::condition_variable cv_on_msg;
-    std::condition_variable cv_on_dtor;
-
 
     [[nodiscard]]
     auto empty() const {
@@ -133,9 +146,16 @@ class channel {
     [[nodiscard]]
     auto pop() {
         assert(stack.size());
-        auto top = stack.back();
-        stack.pop_back();
-        return top;
+        if constexpr (std::same_as<type<_value_t>, std::vector<_value_t>>) {
+            auto top = stack.back();
+            stack.pop_back();
+            return top;
+        } else {
+            auto top = stack.front();
+            stack.pop_front();
+            return top;
+        }
+        throw std::runtime_error{"implementation error"};
     }
 public:
     channel() = default;
@@ -151,9 +171,10 @@ public:
 
     // waits until all sender_receiver are destroyed
     void join() {
-        auto g = std::unique_lock{mutex};
-        while (number_of_sender_receiver > 0) {
-            cv_on_dtor.wait(g);
+        auto v = number_of_sender_receiver.load();
+        while (v != 0) {
+            number_of_sender_receiver.wait(v);
+            v = number_of_sender_receiver.load();
         }
     }
 };

@@ -7,7 +7,7 @@
 
 namespace channel {
 
-/** Data Type thas must be locked to be accessible
+/** Data Type that is forced to be locked to be accessible
  */
 template <typename T>
 class value_mutex {
@@ -27,6 +27,7 @@ class value_mutex {
             return &value;
         }
     };
+
     mutable std::mutex mutex;
     T value;
 
