@@ -125,7 +125,7 @@ TEST_CASE("Tests value_mutex", "[value_mutex]") {
             int x = *l; // read only
 
             // check writing doesn't compile
-            []<typename T=decltype(l)>() {
+            []<typename T=channel::value_mutex<int>>() {
                 static_assert(!requires(T const& l) {
                     { *l = 0 };
                 });
@@ -143,7 +143,7 @@ TEST_CASE("Tests value_mutex", "[value_mutex]") {
             int x = std::as_const(mypair)->first;
 
             // check writing doesn't compile
-            []<typename T=decltype(mypair)>() {
+            []<typename T=channel::value_mutex<std::pair<int, int>>>() {
                 static_assert(!requires(T const& l) {
                     { l->first = 0 };
                 });
