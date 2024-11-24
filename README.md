@@ -42,7 +42,7 @@ Provides utility functions for threaded work loads.
     ```
     Example 2:
     ```
-    // creates a channel FILA (First in First out)(queue)
+    // creates a channel FIFO (First in First out)(queue)
     auto ch = channel::channel<std::string, std::deque>{};
     ```
     Example 3:

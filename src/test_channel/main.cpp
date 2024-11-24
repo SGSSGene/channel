@@ -15,7 +15,7 @@ TEST_CASE("Tests channel with vector", "[channel][vector]") {
         auto queue = channel::channel<std::string>{};
 
         // secure access to id
-        auto sid = channel::value_mutex<size_t>{0ull};
+        auto sid = channel::value_mutex<size_t>{size_t{0}};
 
         // function that should be executed by every thread
         auto threadFunc = [&]() {
@@ -65,7 +65,7 @@ TEST_CASE("Tests channel with deque", "[channel][deque]") {
         auto queue = channel::channel<std::string, std::deque>{};
 
         // secure access to id
-        auto sid = channel::value_mutex<size_t>{0ull};
+        auto sid = channel::value_mutex<size_t>{size_t{0}};
 
         // function that should be executed by every thread
         auto threadFunc = [&]() {
@@ -125,7 +125,7 @@ TEST_CASE("Tests value_mutex", "[value_mutex]") {
             int x = *l; // read only
 
             // check writing doesn't compile
-            []<typename T=decltype(l)>() {
+            []<typename T=channel::value_mutex<int>>() {
                 static_assert(!requires(T const& l) {
                     { *l = 0 };
                 });
@@ -143,7 +143,7 @@ TEST_CASE("Tests value_mutex", "[value_mutex]") {
             int x = std::as_const(mypair)->first;
 
             // check writing doesn't compile
-            []<typename T=decltype(mypair)>() {
+            []<typename T=channel::value_mutex<std::pair<int, int>>>() {
                 static_assert(!requires(T const& l) {
                     { l->first = 0 };
                 });
