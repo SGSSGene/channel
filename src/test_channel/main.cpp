@@ -15,7 +15,7 @@ TEST_CASE("Tests channel with vector", "[channel][vector]") {
         auto queue = channel::channel<std::string>{};
 
         // secure access to id
-        auto sid = channel::value_mutex<size_t>{0ull};
+        auto sid = channel::value_mutex<size_t>{size_t{0}};
 
         // function that should be executed by every thread
         auto threadFunc = [&]() {
@@ -65,7 +65,7 @@ TEST_CASE("Tests channel with deque", "[channel][deque]") {
         auto queue = channel::channel<std::string, std::deque>{};
 
         // secure access to id
-        auto sid = channel::value_mutex<size_t>{0ull};
+        auto sid = channel::value_mutex<size_t>{size_t{0}};
 
         // function that should be executed by every thread
         auto threadFunc = [&]() {
