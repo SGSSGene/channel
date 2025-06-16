@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
+#include "value_mutex.h"
+#include "workers.h"
+
 #include <cassert>
 #include <condition_variable>
 #include <stdexcept>
@@ -9,7 +12,6 @@
 #include <optional>
 #include <deque>
 #include <vector>
-
 
 namespace channel {
 template <typename channel_t>

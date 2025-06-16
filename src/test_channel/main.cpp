@@ -4,7 +4,6 @@
 #include <channel/channel.h>
 #include <string>
 #include <thread>
-#include <value_mutex.h>
 #include <vector>
 
 TEST_CASE("Tests channel with vector", "[channel][vector]") {
@@ -157,5 +156,35 @@ TEST_CASE("Tests value_mutex", "[value_mutex]") {
         auto myint = channel::value_mutex<int, /*.shared=*/true>{};
         auto l1 = *std::as_const(myint);
         auto l2 = *std::as_const(myint);
+    }
+}
+
+
+TEST_CASE("Tests workers", "[workers]") {
+    SECTION("0 workers") {
+        std::atomic_int x{};
+        auto workers = channel::workers{0, [&](){
+            ++x;
+        }};
+        workers.join();
+        CHECK(x.load() == 1);
+    }
+
+    SECTION("1 workers") {
+        std::atomic_int x{};
+        auto workers = channel::workers{1, [&](){
+            ++x;
+        }};
+        workers.join();
+        CHECK(x.load() == 1);
+    }
+
+    SECTION("5 workers") {
+        std::atomic_int x{};
+        auto workers = channel::workers{5, [&](){
+            ++x;
+        }};
+        workers.join();
+        CHECK(x.load() == 5);
     }
 }
