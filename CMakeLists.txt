@@ -8,4 +8,8 @@ project (channel LANGUAGES CXX
 include(cmake/CPM.cmake)
 CPMAddPackage("gh:SGSSGene/cpmpack@1.0.2")
 loadCPMPack("${CMAKE_CURRENT_SOURCE_DIR}/cpmpack.json")
-enable_testing()
+
+if (CHANNEL_BUILD_TEST)
+    enable_testing()
+    add_test(NAME test_channel COMMAND test_channel)
+endif ()
