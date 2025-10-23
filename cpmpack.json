@@ -1,10 +1,17 @@
 {
   "format_version": "1",
+  "translationsets": [
+    {
+      "name": "channel::channel",
+      "type": "library",
+      "language": "cxx_std_20",
+    },
+  ],
   "packages": [
     {
       "if": "PROJECT_IS_TOP_LEVEL",
       "name": "Catch2",
-      "version": "3.7.1",
+      "version": "3.11.0",
       "github_repository": "catchorg/Catch2"
     }
   ]

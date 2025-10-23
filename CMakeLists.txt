@@ -7,10 +7,10 @@ project (channel LANGUAGES CXX
                   VERSION 1.0.0)
 
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:SGSSGene/cpm.dependencies@1.0.0")
-CPMLoadDependenciesFile("${CMAKE_CURRENT_SOURCE_DIR}/cpm.dependencies")
+CPMAddPackage("gh:SGSSGene/cpmpack@1.0.2")
+loadCPMPack("${CMAKE_CURRENT_SOURCE_DIR}/cpmpack.json")
 
-add_subdirectory(src/channel)
+#add_subdirectory(src/channel)
 if (PROJECT_IS_TOP_LEVEL)
     enable_testing()
     add_subdirectory(src/demo_channel)
