@@ -1,18 +1,15 @@
-# SPDX-FileCopyrightText: 2006-2023, Knut Reinert & Freie Universität Berlin
-# SPDX-FileCopyrightText: 2016-2023, Knut Reinert & MPI für molekulare Genetik
+# SPDX-FileCopyrightText: 2025 Simon Gene Gottlieb
 # SPDX-License-Identifier: CC0-1.0
-cmake_minimum_required (VERSION 3.25)
+cmake_minimum_required (VERSION 3.31)
 
 project (channel LANGUAGES CXX
                   VERSION 1.0.0)
 
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:SGSSGene/cpm.dependencies@1.0.0")
-CPMLoadDependenciesFile("${CMAKE_CURRENT_SOURCE_DIR}/cpm.dependencies")
+CPMAddPackage("gh:SGSSGene/cpmpack@1.0.2")
+loadCPMPack("${CMAKE_CURRENT_SOURCE_DIR}/cpmpack.json")
 
-add_subdirectory(src/channel)
-if (PROJECT_IS_TOP_LEVEL)
+if (CHANNEL_BUILD_TEST)
     enable_testing()
-    add_subdirectory(src/demo_channel)
-    add_subdirectory(src/test_channel)
-endif()
+    add_test(NAME test_channel COMMAND test_channel)
+endif ()

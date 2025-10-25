@@ -1,0 +1,49 @@
+{
+  "format_version": "1",
+  "options": [
+    {
+        "name": "CHANNEL_BUILD_TEST",
+        "description": "build tests for channel library",
+        "default": "${PROJECT_IS_TOP_LEVEL}"
+    },
+    {
+        "name": "CHANNEL_BUILD_DEMO",
+        "description": "build demo application showing how to use the channel library",
+        "default": "${PROJECT_IS_TOP_LEVEL}"
+    }
+  ],
+  "translationsets": [
+    {
+      "name": "channel::channel",
+      "type": "library",
+      "language": "cxx_std_20",
+    },
+    {
+        "if": "CHANNEL_BUILD_TEST",
+        "name": "test_channel",
+        "type": "executable",
+        "language": "cxx_std_20",
+        "dependencies": [
+            "channel::channel",
+            "Catch2::Catch2WithMain",
+        ]
+    },
+    {
+        "if": "CHANNEL_BUILD_DEMO",
+        "name": "demo_channel",
+        "type": "executable",
+        "language": "cxx_std_20",
+        "dependencies": [
+            "channel::channel"
+        ]
+    }
+  ],
+  "packages": [
+    {
+      "if": "CHANNEL_BUILD_TEST",
+      "name": "Catch2",
+      "version": "3.11.0",
+      "github_repository": "catchorg/Catch2"
+    },
+  ]
+}
