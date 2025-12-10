@@ -16,11 +16,13 @@
     {
       "name": "channel::channel",
       "type": "library",
+      "test_header": true,
       "language": "cxx_std_20",
     },
     {
         "if": "CHANNEL_BUILD_TEST",
         "name": "test_channel",
+        "test": true,
         "type": "executable",
         "language": "cxx_std_20",
         "dependencies": [
